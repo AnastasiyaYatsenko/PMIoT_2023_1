@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-=d^7%wu7ni9ohx+n&1kt!k(6y)g5694%v4r!2_3les+x88h&t6
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['pmiot20231', 'localhost', '127.0.0.1', '194.28.180.83']
+ALLOWED_HOSTS = ['pmiot', 'localhost', '127.0.0.1', '194.28.180.83']
 
 
 # Application definition
@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'pmiot'
 ]
 
 MIDDLEWARE = [
@@ -49,7 +50,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'pmiot_site.urls'
+ROOT_URLCONF = 'project.urls'
 
 TEMPLATES = [
     {
@@ -67,7 +68,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'pmiot_site.wsgi.application'
+WSGI_APPLICATION = 'project.wsgi.application'
 
 
 # Database
