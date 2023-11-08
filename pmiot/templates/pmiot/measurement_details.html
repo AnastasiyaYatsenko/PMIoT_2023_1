@@ -1,0 +1,84 @@
+{% extends "pmiot/layout.html" %}
+{% block title %}
+measurement details
+{% endblock %}
+{% block content %}
+  <section class="details">
+    <div class="_container">
+      <div class="details__wrapper">
+        <h1 class="details__title">
+          {{details.measurementName}}
+        </h1>
+
+        <ul class="details-list">
+          <li class="details__item">
+            <div class="details__column">
+              Parameter
+            </div>
+
+            <div class="details__column">
+              Value
+            </div>
+          </li>
+
+          <li class="details__item">
+            <div class="details__column">
+              Type
+            </div>
+
+            <div class="details__column">
+              {{details.measurementType}}
+            </div>
+          </li>
+
+          <li class="details__item">
+            <div class="details__column">
+              Value
+            </div>
+
+            <div class="details__column">
+              {{details.value}}
+            </div>
+          </li>
+
+          <li class="details__item">
+            <div class="details__column">
+              Is working
+            </div>
+
+            <div class="details__column">
+              {{details.isWorking}}
+            </div>
+          </li>
+
+          <li class="details__item">
+            <div class="details__column">
+              Description
+            </div>
+
+            <div class="details__column">
+              {{details.description}}
+            </div>
+          </li>
+        </ul>
+      
+        <div class="details-form">
+          <p class="details-form__title">
+            Change value
+          </p>
+
+          <form method="POST" action="{% url 'measurement_details' details.pk %}" class="details-form__form">
+            {% csrf_token %}
+            {{ form.as_p }}
+  
+            <button type="submit" class="save button btn-default">
+              <span>
+                submit
+              </span>
+            </button>
+          </form>  
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}

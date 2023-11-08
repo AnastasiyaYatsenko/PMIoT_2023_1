@@ -1,0 +1,46 @@
+{% extends "pmiot/layout.html" %}
+{% block title %}
+list of measurements
+{% endblock %}
+{% block content %}
+  <section class="measurements">
+    <div class="_container">
+      <div class="measurements__wrapper">
+        <h1 class="measurements__title">List of measurements</h1>
+
+        <ul class="measurements-list">
+          {% for measurement in measurements %}
+            <li class="measurements-list__item">
+              <div class="measurements-list__header">
+                <p class="measurements-list__subtitle">
+                  Name:
+                </p>
+
+                <p class="measurements-list__title">
+                  {{ measurement.measurementName }}
+                </p>
+              </div>
+
+              <div class="measurements-list__header">
+                <p class="measurements-list__subtitle">
+                  Status:
+                </p>
+
+                <div class="measurements-list__status">
+                  {{ measurement.isWorking }}
+                </div>
+              </div>
+
+
+              <a href="{% url 'measurement_details' measurement.pk %}" class="measurements-list__link button">
+                <span>
+                  details
+                </span>
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </section>
+{% endblock %}
