@@ -1,6 +1,5 @@
 from django.db import models
 
-# Create your models here.
 class Measurement(models.Model):
     isWorking = models.BooleanField(default=False)
     value = models.IntegerField(max_length=50)
