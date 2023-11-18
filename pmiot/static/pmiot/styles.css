@@ -633,3 +633,9 @@ html:not(.v-mobile) .navigation .navigation__link:hover::before {
 .form-section__warpper {
   max-width: 600px;
 }
+
+.alert {
+  background-color: var(--color-highlight);
+  color: var(--color-error);
+  font-weight: bold;
+}

@@ -67,10 +67,18 @@ measurement details
             Change value
           </p>
 
-          <form method="POST" action="{% url 'measurement_details' details.pk %}" class="details-form__form">
+          {% if messages %}
+            {% for message in messages %}
+              <div class="alert">
+                  {{ message }}
+              </div>
+            {% endfor %}
+          {% endif %}
+
+          <form method="POST" action="{% url 'change_value' details.id %}" class="details-form__form">
             {% csrf_token %}
-            {{ form.as_p }}
-  
+            <!-- {{ form.as_p }} -->
+            <input id="enter_value" type="number" name="enter_value" min=0 max=9999 placeholder="Значення..." required>
             <button type="submit" class="save button btn-default">
               <span>
                 submit
