@@ -6,7 +6,4 @@ class MeasurementForm(forms.ModelForm):
         model = Measurement
         fields = '__all__'
 
-class ChangeValueForm(forms.ModelForm):
-    class Meta:
-        model = Measurement
-        fields = ('value',)
+        
