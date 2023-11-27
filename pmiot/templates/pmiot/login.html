@@ -1,0 +1,22 @@
+{% extends "pmiot/layout.html" %}
+{% block title %}
+  form
+{% endblock %}
+{% block content %}
+  <div class="form-section">
+    <div class="_container">
+      <div class="form-section__warpper">
+        <form method="POST" action="{% url 'login' %}" class="measurement">
+          {% csrf_token %}
+          {{ form.as_p }}
+
+          <button type="submit" class="save button btn-default">
+            <span>
+              submit
+            </span>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}

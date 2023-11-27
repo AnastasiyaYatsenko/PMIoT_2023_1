@@ -1,6 +1,7 @@
 from datetime import datetime
 import os
 
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.shortcuts import redirect
@@ -10,18 +11,24 @@ from django.conf import settings
 from django.contrib import messages
 
 from pmiot.models import Measurement
-from pmiot.forms import MeasurementForm
+from pmiot.forms import MeasurementForm, LoginForm
 # from pmiot.forms import ChangeValueForm
+
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login, logout
 
 # from django.http import HttpResponse
 
 # Create your views here.
 
 
-class MeasurementList(generic.ListView):
+class MeasurementList(LoginRequiredMixin, generic.ListView):
     model = Measurement
     context_object_name = 'measurements'
     template_name = 'measurement_list.html'
+    login_url = "/login/"
+    redirect_field_name = "login"
 
     def get(self, request, *args, **kwargs):
         # try:
@@ -37,12 +44,15 @@ class MeasurementList(generic.ListView):
         return super(MeasurementList, self).get(request, *args, **kwargs)
 
 
-class MeasurementCreate(generic.CreateView):
+class MeasurementCreate(LoginRequiredMixin, generic.CreateView):
     form_class = MeasurementForm
     template_name = 'pmiot/create_measurement.html'
     success_url = reverse_lazy('measurement_list')
+    login_url = "/login/"
+    redirect_field_name = "login"
 
 # show data about sensor
+@login_required(login_url="/login/")
 def measurement_details(request, measurement_id):
     # get sensor by id
     sensor = get_object_or_404(Measurement, pk=measurement_id)
@@ -51,6 +61,7 @@ def measurement_details(request, measurement_id):
     return render(request, 'pmiot/measurement_details.html', context)
 
 # change value for sensor
+@login_required(login_url="/login/")
 def change_value(request, measurement_id):
     # clear previous messages
     storage = messages.get_messages(request)
@@ -69,5 +80,28 @@ def change_value(request, measurement_id):
     return HttpResponseRedirect(reverse('measurement_details',
                                         args=(measurement_id,)))
 
+@login_required(login_url="/login/")
 def about(request):
     return render(request, 'pmiot/about.html')
+
+
+def login_view(request):
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        print(form)
+        if form.is_valid():
+            user = authenticate(username=form.cleaned_data['username'],
+                                password=form.cleaned_data['password'])
+            if user is not None and user.is_active:
+                login(request, user)
+                return redirect('/')
+        else:
+            return render(request, 'pmiot/login.html', {'form': form})
+    else:
+        form = LoginForm()
+    return render(request, 'pmiot/login.html', {'form': form})
+
+
+def logout_view(request):
+    logout(request)
+    return redirect('/login')
