@@ -1,13 +1,107 @@
-from django.shortcuts import render
+from datetime import datetime
+import os
+
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import get_object_or_404, render
+from django.shortcuts import redirect
+from django.urls import reverse_lazy, reverse
+from django.views import generic
+from django.conf import settings
+from django.contrib import messages
+
+from pmiot.models import Measurement
+from pmiot.forms import MeasurementForm, LoginForm
+# from pmiot.forms import ChangeValueForm
+
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login, logout
+
 # from django.http import HttpResponse
 
 # Create your views here.
 
 
-def home(request):
-    # return HttpResponse("Hello, Django!")
-    print(request.build_absolute_uri())  # optional
-    return render(
-        request,
-        'pmiot/hello.html'
-    )
+class MeasurementList(LoginRequiredMixin, generic.ListView):
+    model = Measurement
+    context_object_name = 'measurements'
+    template_name = 'measurement_list.html'
+    login_url = "/login/"
+    redirect_field_name = "login"
+
+    def get(self, request, *args, **kwargs):
+        # try:
+        #     file_path = os.path.join(settings.BASE_DIR, 'test_data.txt')
+        #     measurement_file = open(file_path, 'r')
+
+        #     for value in measurement_file:
+        #         Measurement.objects.get_or_create(value=value)
+
+        # except IOError:
+        #     pass
+
+        return super(MeasurementList, self).get(request, *args, **kwargs)
+
+
+class MeasurementCreate(LoginRequiredMixin, generic.CreateView):
+    form_class = MeasurementForm
+    template_name = 'pmiot/create_measurement.html'
+    success_url = reverse_lazy('measurement_list')
+    login_url = "/login/"
+    redirect_field_name = "login"
+
+# show data about sensor
+@login_required(login_url="/login/")
+def measurement_details(request, measurement_id):
+    # get sensor by id
+    sensor = get_object_or_404(Measurement, pk=measurement_id)
+    # pass to page
+    context = {'details': sensor}
+    return render(request, 'pmiot/measurement_details.html', context)
+
+# change value for sensor
+@login_required(login_url="/login/")
+def change_value(request, measurement_id):
+    # clear previous messages
+    storage = messages.get_messages(request)
+    # get sensor by id
+    sensor = get_object_or_404(Measurement, pk=measurement_id)
+    # get new value from form
+    new_value = int(request.POST['enter_value'])
+    # check if value is in borders
+    if new_value >= sensor.min_value and new_value <= sensor.max_value:
+        # change value in db
+        sensor.value = new_value
+        sensor.save()
+    else:
+        # prepare error message to show
+        messages.error(request, 'Value should be between {} and {}! You entered {}!'.format(sensor.min_value, sensor.max_value, new_value))
+    return HttpResponseRedirect(reverse('measurement_details',
+                                        args=(measurement_id,)))
+
+@login_required(login_url="/login/")
+def about(request):
+    return render(request, 'pmiot/about.html')
+
+
+def login_view(request):
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        print(form)
+        if form.is_valid():
+            user = authenticate(username=form.cleaned_data['username'],
+                                password=form.cleaned_data['password'])
+            if user is not None and user.is_active:
+                login(request, user)
+                return redirect('/')
+        else:
+            return render(request, 'pmiot/login.html', {'form': form})
+    else:
+        form = LoginForm()
+    return render(request, 'pmiot/login.html', {'form': form})
+
+
+def logout_view(request):
+    logout(request)
+    return redirect('/login')
