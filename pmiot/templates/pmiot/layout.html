@@ -28,6 +28,7 @@
       <div class="_container">
         <div class="nav navigation">
           <ul class="navigation-list">
+            {% if request.user.is_authenticated %}
             <li>
               <a href="{% url 'measurement_list' %}" class="navigation__link">List</a>
             </li>
@@ -37,6 +38,14 @@
             <li>
               <a href="{% url 'create_measurement' %}" class="navigation__link">Form measurement</a>
             </li>
+            <li>
+              <a href="{% url 'logout' %}" class="navigation__link">Logout</a>
+            </li>
+            {% else %}
+            <li>
+              <a href="{% url 'login' %}" class="navigation__link">Login</a>
+            </li>
+            {% endif %}
           </ul>
         </div>
       </div>

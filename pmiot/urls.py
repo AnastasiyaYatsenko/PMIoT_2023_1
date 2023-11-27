@@ -12,4 +12,6 @@ urlpatterns = [
     path('change_value/<int:measurement_id>/', views.change_value, name='change_value'),
     path("create_measurement/", MeasurementCreate.as_view(),
          name="create_measurement"),
+    path('login/', views.login_view, name='login'),
+    path('logout/', views.logout_view, name='logout'),
 ]
