@@ -87,12 +87,9 @@ def about(request):
 
 def login_view(request):
     if request.method == 'POST':
-        print("post")
         form = LoginForm(request.POST)
         print(form)
         if form.is_valid():
-            print(form.cleaned_data['username'])
-            print(form.cleaned_data['password'])
             user = authenticate(username=form.cleaned_data['username'],
                                 password=form.cleaned_data['password'])
             if user is not None and user.is_active:
@@ -101,7 +98,6 @@ def login_view(request):
         else:
             return render(request, 'pmiot/login.html', {'form': form})
     else:
-        print("not post")
         form = LoginForm()
     return render(request, 'pmiot/login.html', {'form': form})
 
