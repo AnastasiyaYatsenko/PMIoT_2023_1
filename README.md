@@ -30,9 +30,18 @@ Repository for PMIoT project of the group 2023-1 (Arkhypov, Kryvous, Karnaukh, Y
      .venv\scripts\activate
      ```
      
-4. Оновлюємо менеджер пакетів: python -m pip install --upgrade pip
-5. Встановлюємо Django: python -m pip install django
-6. Запускаємо локальний сервер: python manage.py runserver
+4. Оновлюємо менеджер пакетів:
+   ```
+   python -m pip install --upgrade pip
+   ```
+5. Встановлюємо Django:
+   ```
+   python -m pip install django
+   ```
+7. Запускаємо локальний сервер:
+   ```
+   python manage.py runserver
+   ```
 
 # Встановлення серверу
 Встановлення серверу складається з наступних компонентів:
