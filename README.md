@@ -18,17 +18,17 @@ Repository for PMIoT project of the group 2023-1 (Arkhypov, Kryvous, Karnaukh, Y
   
       
      **macOS**
-     
-     {python3 -m venv .venv
-     
+     ```
+     python3 -m venv .venv
      source .venv/bin/activate}
-  
+     ```
       
      **Windows**
-     
-     {py -3 -m venv .venv
-     
-     .venv\scripts\activate}
+  
+     ```
+     py -3 -m venv .venv
+     .venv\scripts\activate
+     ```
      
 4. Оновлюємо менеджер пакетів: python -m pip install --upgrade pip
 5. Встановлюємо Django: python -m pip install django
