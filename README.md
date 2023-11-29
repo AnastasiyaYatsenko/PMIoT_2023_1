@@ -16,8 +16,8 @@ Repository for PMIoT project of the group 2023-1 (Arkhypov, Kryvous, Karnaukh, Y
      source .venv/bin/activate
      ```
   
-      
      **macOS**
+     
      ```
      python3 -m venv .venv
      source .venv/bin/activate}
@@ -31,14 +31,19 @@ Repository for PMIoT project of the group 2023-1 (Arkhypov, Kryvous, Karnaukh, Y
      ```
      
 4. Оновлюємо менеджер пакетів:
+   
    ```
    python -m pip install --upgrade pip
    ```
+   
 5. Встановлюємо Django:
+ 
    ```
    python -m pip install django
    ```
-7. Запускаємо локальний сервер:
+   
+6. Запускаємо локальний сервер:
+   
    ```
    python manage.py runserver
    ```
@@ -58,25 +63,26 @@ pip install uwsgi
 ```
 
 Далі необхідно створити новий файл uwsgi.ini поруч із manage.py з наступним змістом:
-```
-[uwsgi]
 
-chdir = <шлях до папки з проєктом>/pmiot_site
-
-module=project.wsgi
-
-socket = 127.0.0.1:8080
-
-chmod-socket=666
-
-home=<шлях до папки з проєктом>/pmiot_env
-
-req-logger = file:/var/log/uwsgi/req.log
-
-logger = file:/var/log/uwsgi/err.log
-
-static-map = /static=<шлях до папки з проєктом>/pmiot_site/pmiot/static
-```
+   ```
+   [uwsgi]
+   
+   chdir = <шлях до папки з проєктом>/pmiot_site
+   
+   module=project.wsgi
+   
+   socket = 127.0.0.1:8080
+   
+   chmod-socket=666
+   
+   home=<шлях до папки з проєктом>/pmiot_env
+   
+   req-logger = file:/var/log/uwsgi/req.log
+   
+   logger = file:/var/log/uwsgi/err.log
+   
+   static-map = /static=<шлях до папки з проєктом>/pmiot_site/pmiot/static
+   ```
 
 - chdir використовується для позначення каталогу проекту;
 - module — Django wsgi файл;
