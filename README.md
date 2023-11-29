@@ -12,11 +12,11 @@ Repository for PMIoT project of the group 2023-1 (Arkhypov, Kryvous, Karnaukh, Y
      
      {
      
-     sudo apt-get install python3-venv
-     
-     python3 -m venv .venv
-     
-     source .venv/bin/activate
+        sudo apt-get install python3-venv
+        
+        python3 -m venv .venv
+        
+        source .venv/bin/activate
 
      }
   
