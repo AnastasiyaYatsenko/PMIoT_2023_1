@@ -62,7 +62,9 @@ chmod-socket=666
 home=<шлях до папки з проєктом>/pmiot_env
 
 req-logger = file:/var/log/uwsgi/req.log
+
 logger = file:/var/log/uwsgi/err.log
+
 static-map = /static=<шлях до папки з проєктом>/pmiot_site/pmiot/static
 
 
