@@ -7,18 +7,20 @@ Repository for PMIoT project of the group 2023-1 (Arkhypov, Kryvous, Karnaukh, Y
 3. Створюємо віртуальне середовище:
    - відкриваємо термінал, переходимо до робочої папки
    - вводимо в термінал в залежності від ОС:
-       **Linux**
-      sudo apt-get install python3-venv
-      python3 -m venv .venv
-      source .venv/bin/activate
+     
+     **Linux**
+     sudo apt-get install python3-venv
+     python3 -m venv .venv
+     source .venv/bin/activate
       
-      **macOS**
-      python3 -m venv .venv
-      source .venv/bin/activate
+     **macOS**
+     python3 -m venv .venv
+     source .venv/bin/activate
       
-      **Windows**
-      py -3 -m venv .venv
-      .venv\scripts\activate
+     **Windows**
+     py -3 -m venv .venv
+     .venv\scripts\activate
+     
 4. Оновлюємо менеджер пакетів: python -m pip install --upgrade pip
 5. Встановлюємо Django: python -m pip install django
 6. Запускаємо локальний сервер: python manage.py runserver
