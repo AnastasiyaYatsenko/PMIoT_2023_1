@@ -12,15 +12,10 @@ from django.contrib import messages
 
 from pmiot.models import Measurement
 from pmiot.forms import MeasurementForm, LoginForm
-# from pmiot.forms import ChangeValueForm
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
-
-# from django.http import HttpResponse
-
-# Create your views here.
 
 
 class MeasurementList(LoginRequiredMixin, generic.ListView):

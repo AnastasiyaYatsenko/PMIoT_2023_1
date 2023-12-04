@@ -39,8 +39,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_crontab',
     'pmiot'
 ]
+
+CRONJOBS = [
+    ('*/2 * * * *', 'pmiot.scheduler.scheduler.cron_scheduler')
+     ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
