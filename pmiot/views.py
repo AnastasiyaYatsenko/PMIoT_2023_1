@@ -17,6 +17,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 
+from pmiot.scheduler.scheduler import process_data
+
 
 class MeasurementList(LoginRequiredMixin, generic.ListView):
     model = Measurement
@@ -49,6 +51,8 @@ class MeasurementCreate(LoginRequiredMixin, generic.CreateView):
 # show data about sensor
 @login_required(login_url="/login/")
 def measurement_details(request, measurement_id):
+    # update sensors
+    process_data()
     # get sensor by id
     sensor = get_object_or_404(Measurement, pk=measurement_id)
     # pass to page
