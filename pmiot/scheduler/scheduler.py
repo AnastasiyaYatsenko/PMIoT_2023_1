@@ -3,8 +3,7 @@ import time
 import os
 import pandas as pd
 
-from pmiot.models import Measurement
-
+from pmiot.models import Measurement, Archive
 
 # variables
 num_row = 14570
@@ -13,6 +12,7 @@ column_names = ['Carbon_Monoxide [Ohms]', 'Relative_Humidity [%]',
                 'Light_Level [Ohms]', 'Temperature-BMP [Celsius]']
 dict = {measurement_types[i]: column_names[i]
         for i in range(len(measurement_types))}
+
 
 # get data from dataset
 def data_from_dataset(id=-1):
@@ -50,12 +50,12 @@ def data_from_dataset(id=-1):
                 sensors = None
             # debug
             # print('Sensor is working: ', sensors[0].isWorking)
-        
+
         if sensors is None:
             # debug
             print('No sensors to update!')
         else:
-        # link sensors and values
+            # link sensors and values
             for s in sensors:
                 col = dict.get(s.measurementType)
                 val = ds[col][num_row]
@@ -72,15 +72,27 @@ def data_from_dataset(id=-1):
         # print('Row:', num_row)
     else:
         # error warning
-        print('Error! No file was found for getting data!')    
+        print('Error! No file was found for getting data!')
     return result
+
 
 # transfer data to database
 def process_data():
     data = data_from_dataset()
     print('We got:', data)
-    dt = datetime.now().strftime("%Y.%m.%d %H:%M:%S")
+    dt = datetime.now()  # .strftime("%Y.%m.%d %H:%M:%S")
     print(dt)
-    # write to db - Measurement: value
-    # write to db - Archive: Measurement.pk, value, dt
-    # reload page?
+
+    write_to_db(dt, data)
+
+
+def write_to_db(dt, data):
+    print('infunc', data)
+    for sensor_id, value in data.items():
+        print(sensor_id)
+        measurement = Measurement.objects.get(pk=sensor_id)
+        measurement.value = value
+        measurement.save()
+        archive = Archive(sensor_id=measurement, value=value, timestamp=dt)
+        archive.save()
+        

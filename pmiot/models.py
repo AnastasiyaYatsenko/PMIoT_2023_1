@@ -16,3 +16,15 @@ class Measurement(models.Model):
 
     def __unicode__(self):
         return self.value
+
+
+class Archive(models.Model):
+    sensor_id = models.ForeignKey(Measurement,on_delete=models.CASCADE)
+    value = models.IntegerField(default=0)
+    timestamp=models.DateTimeField(default=None)
+
+    class Meta:
+        ordering = ['timestamp']
+
+    # def __unicode__(self):
+    #     return self.value
