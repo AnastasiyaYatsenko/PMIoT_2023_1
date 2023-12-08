@@ -11,6 +11,12 @@ class Measurement(models.Model):
     dimension = models.CharField(default='°C', max_length=10)
     isWorking = models.BooleanField(default=False)
 
+    min_comfort = models.IntegerField(default=0)
+    max_comfort = models.IntegerField(default=100)
+    need_notification = models.BooleanField(default=False)
+    is_notified = models.BooleanField(default=False)
+    last_notified = models.DateTimeField(default=None, null=True)
+
     class Meta:
         ordering = ['measurementName']
 
