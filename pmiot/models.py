@@ -11,6 +11,8 @@ class Measurement(models.Model):
     dimension = models.CharField(default='°C', max_length=10)
     isWorking = models.BooleanField(default=False)
 
+    image = models.ImageField(default=None, upload_to='', null=True)
+
     class Meta:
         ordering = ['measurementName']
 

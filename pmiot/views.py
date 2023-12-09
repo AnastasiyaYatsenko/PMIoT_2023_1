@@ -67,15 +67,16 @@ def change_value(request, measurement_id):
     # get sensor by id
     sensor = get_object_or_404(Measurement, pk=measurement_id)
     # get new value from form
-    new_value = int(request.POST['enter_value'])
+    new_value = bool(request.POST['enter_value'])
     # check if value is in borders
-    if new_value >= sensor.min_value and new_value <= sensor.max_value:
+    # if new_value >= sensor.min_value and new_value <= sensor.max_value:
+    if new_value != sensor.isWorking:
         # change value in db
-        sensor.value = new_value
+        sensor.isWorking = new_value
         sensor.save()
     else:
         # prepare error message to show
-        messages.error(request, 'Value should be between {} and {}! You entered {}!'.format(sensor.min_value, sensor.max_value, new_value))
+        messages.error(request, 'It is the same value. Curent value: {}'.format(sensor.isWorking))
     return HttpResponseRedirect(reverse('measurement_details',
                                         args=(measurement_id,)))
 
