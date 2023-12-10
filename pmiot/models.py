@@ -13,6 +13,12 @@ class Measurement(models.Model):
 
     image = models.ImageField(default=None, upload_to='', null=True)
 
+    min_comfort = models.IntegerField(default=0)
+    max_comfort = models.IntegerField(default=100)
+    need_notification = models.BooleanField(default=False)
+    is_notified = models.BooleanField(default=False)
+    last_notified = models.DateTimeField(default=None, null=True)
+
     class Meta:
         ordering = ['measurementName']
 

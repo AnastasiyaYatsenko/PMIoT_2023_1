@@ -1,4 +1,5 @@
 from datetime import datetime
+import pytz
 import os
 
 from django.contrib.auth.decorators import login_required
@@ -19,6 +20,7 @@ from django.contrib.auth import authenticate, login, logout
 
 from pmiot.scheduler.scheduler import process_data
 
+KyivTz = pytz.timezone("Europe/Kiev")
 
 class MeasurementList(LoginRequiredMixin, generic.ListView):
     model = Measurement
@@ -55,6 +57,25 @@ def measurement_details(request, measurement_id):
     process_data()
     # get sensor by id
     sensor = get_object_or_404(Measurement, pk=measurement_id)
+
+    is_comfortable = (sensor.value > sensor.min_comfort) and (sensor.value < sensor.max_comfort)
+    if ((not is_comfortable) and
+            ((not sensor.is_notified) or
+             (sensor.is_notified and ((datetime.now(KyivTz)-sensor.last_notified).total_seconds() > 30 ))))\
+            and (sensor.need_notification and sensor.isWorking): #300
+        msg = "Attention! The sensor value is "
+        if sensor.value < sensor.min_comfort:
+            msg += "lower than comfortable!"
+        elif sensor.value > sensor.max_comfort:
+            msg += "higher than comfortable!"
+        sensor.is_notified = True
+        sensor.last_notified = datetime.now(KyivTz)
+        sensor.save()
+        context = {'details': sensor,
+                   'msg': msg}
+        return render(request, 'pmiot/measurement_details.html', context)
+    else:
+        sensor.is_notified = False
     # pass to page
     context = {'details': sensor}
     return render(request, 'pmiot/measurement_details.html', context)

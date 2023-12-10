@@ -104,4 +104,9 @@ measurement details
       </div>
     </div>
   </section>
+{% if msg %}
+   <script>
+     alert('{{ msg }}');
+   </script>
+{% endif %}
 {% endblock %}
