@@ -2,6 +2,8 @@ from datetime import datetime
 import time
 import os
 import pandas as pd
+import pytz
+KyivTz = pytz.timezone("Europe/Kiev")
 
 from pmiot.models import Measurement, Archive
 
@@ -77,10 +79,10 @@ def data_from_dataset(id=-1):
 
 
 # transfer data to database
-def process_data():
-    data = data_from_dataset()
+def process_data(id=-1):
+    data = data_from_dataset(id)
     print('We got:', data)
-    dt = datetime.now()  # .strftime("%Y.%m.%d %H:%M:%S")
+    dt = datetime.now(KyivTz)  # .strftime("%Y.%m.%d %H:%M:%S")
     print(dt)
 
     write_to_db(dt, data)

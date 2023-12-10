@@ -1,4 +1,5 @@
 from datetime import datetime
+import pytz
 import os
 
 from django.contrib.auth.decorators import login_required
@@ -19,6 +20,7 @@ from django.contrib.auth import authenticate, login, logout
 
 from pmiot.scheduler.scheduler import process_data
 
+KyivTz = pytz.timezone("Europe/Kiev")
 
 class MeasurementList(LoginRequiredMixin, generic.ListView):
     model = Measurement
@@ -52,9 +54,28 @@ class MeasurementCreate(LoginRequiredMixin, generic.CreateView):
 @login_required(login_url="/login/")
 def measurement_details(request, measurement_id):
     # update sensors
-    process_data()
+    process_data(measurement_id)
     # get sensor by id
     sensor = get_object_or_404(Measurement, pk=measurement_id)
+
+    is_comfortable = (sensor.value > sensor.min_comfort) and (sensor.value < sensor.max_comfort)
+    if ((not is_comfortable) and
+            ((not sensor.is_notified) or
+             (sensor.is_notified and ((datetime.now(KyivTz)-sensor.last_notified).total_seconds() > 30 ))))\
+            and (sensor.need_notification and sensor.isWorking): #300
+        msg = "Attention! The sensor value is "
+        if sensor.value < sensor.min_comfort:
+            msg += "lower than comfortable!"
+        elif sensor.value > sensor.max_comfort:
+            msg += "higher than comfortable!"
+        sensor.is_notified = True
+        sensor.last_notified = datetime.now(KyivTz)
+        sensor.save()
+        context = {'details': sensor,
+                   'msg': msg}
+        return render(request, 'pmiot/measurement_details.html', context)
+    else:
+        sensor.is_notified = False
     # pass to page
     context = {'details': sensor}
     return render(request, 'pmiot/measurement_details.html', context)
@@ -67,15 +88,16 @@ def change_value(request, measurement_id):
     # get sensor by id
     sensor = get_object_or_404(Measurement, pk=measurement_id)
     # get new value from form
-    new_value = int(request.POST['enter_value'])
+    new_value = bool(request.POST['enter_value'])
     # check if value is in borders
-    if new_value >= sensor.min_value and new_value <= sensor.max_value:
+    # if new_value >= sensor.min_value and new_value <= sensor.max_value:
+    if new_value != sensor.isWorking:
         # change value in db
-        sensor.value = new_value
+        sensor.isWorking = new_value
         sensor.save()
     else:
         # prepare error message to show
-        messages.error(request, 'Value should be between {} and {}! You entered {}!'.format(sensor.min_value, sensor.max_value, new_value))
+        messages.error(request, 'It is the same value. Curent value: {}'.format(sensor.isWorking))
     return HttpResponseRedirect(reverse('measurement_details',
                                         args=(measurement_id,)))
 
