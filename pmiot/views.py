@@ -54,7 +54,7 @@ class MeasurementCreate(LoginRequiredMixin, generic.CreateView):
 @login_required(login_url="/login/")
 def measurement_details(request, measurement_id):
     # update sensors
-    process_data()
+    process_data(measurement_id)
     # get sensor by id
     sensor = get_object_or_404(Measurement, pk=measurement_id)
 
