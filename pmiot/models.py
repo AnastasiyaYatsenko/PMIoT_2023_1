@@ -28,8 +28,8 @@ class Measurement(models.Model):
 
 class Archive(models.Model):
     sensor_id = models.ForeignKey(Measurement,on_delete=models.CASCADE)
-    value = models.IntegerField(default=0)
-    timestamp=models.DateTimeField(default=None)
+    value = models.FloatField(default=0)
+    timestamp = models.DateTimeField(default=None)
 
     class Meta:
         ordering = ['timestamp']

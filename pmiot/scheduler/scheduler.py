@@ -1,7 +1,7 @@
 from datetime import datetime
-import time
 import os
 import pandas as pd
+
 import pytz
 KyivTz = pytz.timezone("Europe/Kiev")
 
@@ -81,17 +81,21 @@ def data_from_dataset(id=-1):
 # transfer data to database
 def process_data(id=-1):
     data = data_from_dataset(id)
-    print('We got:', data)
-    dt = datetime.now(KyivTz)  # .strftime("%Y.%m.%d %H:%M:%S")
-    print(dt)
+    # debug
+    # print('We got:', data)
+    dt = datetime.now(KyivTz)
+    # debug
+    # print(dt)
 
     write_to_db(dt, data)
 
 
 def write_to_db(dt, data):
-    print('infunc', data)
+    # debug
+    # print('infunc', data)
     for sensor_id, value in data.items():
-        print(sensor_id)
+        # debug
+        # print(sensor_id)
         measurement = Measurement.objects.get(pk=sensor_id)
         measurement.value = value
         measurement.save()

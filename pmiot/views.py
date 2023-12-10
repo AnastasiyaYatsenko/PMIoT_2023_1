@@ -19,6 +19,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 
 from pmiot.scheduler.scheduler import process_data
+from pmiot.prognose.prognose import prognose
 
 KyivTz = pytz.timezone("Europe/Kiev")
 
@@ -53,6 +54,8 @@ class MeasurementCreate(LoginRequiredMixin, generic.CreateView):
 # show data about sensor
 @login_required(login_url="/login/")
 def measurement_details(request, measurement_id):
+    # prognose value
+    prognose(measurement_id)
     # update sensors
     process_data(measurement_id)
     # get sensor by id
