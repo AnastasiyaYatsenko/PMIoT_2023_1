@@ -42,7 +42,13 @@ Repository for PMIoT project of the group 2023-1 (Arkhypov, Kryvous, Karnaukh, Y
    python -m pip install django
    ```
    
-6. Запускаємо локальний сервер:
+6. Встановлюємо пакет Pillow для роботи з картинками:
+ 
+   ```
+   pip install Pillow
+   ```
+   
+7. Запускаємо локальний сервер:
    
    ```
    python manage.py runserver
