@@ -32,23 +32,17 @@ class NotificationTests(TestCase):
         measurement.max_comfort = -5
         measurement.min_comfort = -10
         measurement.is_notified = False
+        measurement.need_notification = True
         measurement.save()
 
-        # c = Client(enforce_csrf_checks=True)
         self.client.login(username='admin', password='admin')
         user = User.objects.get(username='admin')
         measurement = Measurement.objects.get(measurementType='Temperature')
-        # response = c.get('/measurement_details/' + str(measurement.pk))
-        # factory = RequestFactory()
-        # request = factory.get('/measurement_details/' + str(measurement.pk))
         response = self.client.get("/measurement_details/" + str(measurement.pk), follow=True)
-        # self.assertRedirects(response, ('/measurement_details/' + str(measurement.pk)),
-        #                      status_code=301, target_status_code=200)
-        # response = c.get('/', follow=True)
         measurement = Measurement.objects.get(measurementType='Temperature')
         print(measurement.value)
         res = measurement.is_notified
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(res, 1)
 
     def test__value_less_then_comfortable(self):
         # change instance (isWorking = True)
@@ -57,23 +51,17 @@ class NotificationTests(TestCase):
         measurement.max_comfort = 90
         measurement.min_comfort = 100
         measurement.is_notified = False
+        measurement.need_notification = True
         measurement.save()
 
-        # c = Client(enforce_csrf_checks=True)
         self.client.login(username='admin', password='admin')
         user = User.objects.get(username='admin')
         measurement = Measurement.objects.get(measurementType='Temperature')
-        # response = c.get('/measurement_details/' + str(measurement.pk))
-        # factory = RequestFactory()
-        # request = factory.get('/measurement_details/' + str(measurement.pk))
         response = self.client.get("/measurement_details/" + str(measurement.pk), follow=True)
-        # self.assertRedirects(response, ('/measurement_details/' + str(measurement.pk)),
-        #                      status_code=301, target_status_code=200)
-        # response = c.get('/', follow=True)
         measurement = Measurement.objects.get(measurementType='Temperature')
         print(measurement.value)
         res = measurement.is_notified
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(res, 1)
 
     def tearDown(self):
         Archive.objects.all().delete()
