@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 from sklearn.linear_model import LinearRegression
 from sklearn.neural_network import MLPRegressor
@@ -36,7 +37,7 @@ def prepare_data(id):
     data = pd.DataFrame(list(archive.values('timestamp', 'value')))
     data['timestamp'] = pd.to_datetime(data['timestamp'])
     # datetime to seconds
-    data['timestamp'] = data['timestamp'].astype(int) // 10**9
+    data['timestamp'] = data['timestamp'].astype(np.int64) // 10**9
     #data = data.drop(columns=['timestamp'])
     return data
 
