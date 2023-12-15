@@ -2,7 +2,7 @@ import inspect
 from datetime import datetime
 
 from django.contrib.auth.models import User
-from django.test import TestCase, Client, RequestFactory
+from django.test import TestCase
 
 from pmiot.models import Measurement, Archive
 from pmiot.scheduler.scheduler import data_from_dataset
@@ -211,6 +211,71 @@ class NotificationTests(TestCase):
         res = measurement.is_notified
         self.assertEqual(response.status_code, 200)
 
+    def tearDown(self):
+        Archive.objects.all().delete()
+        Measurement.objects.all().delete()
+        User.objects.all().delete()
+
+class DetailsViewsTests(TestCase):
+    # prepare data for every test
+    def setUp(self):
+        # create 2 instances with different types
+        admin = User.objects.create_superuser(username='admin', password='admin')
+        measurement = Measurement.objects.create(measurementType='Temperature',
+                                                 image='/static/images/BMP085.jpg', value=11.0)
+        
+        Archive.objects.create(sensor_id = measurement, value = 22.0, timestamp = datetime.now())
+
+        # print results
+        print()
+        print(inspect.getframeinfo(inspect.currentframe()).function)
+        print('Number of sensors:', len(Measurement.objects.all()))
+
+        pass
+
+    def test__if_value_update(self):
+        self.client.login(username='admin', password='admin')
+        User.objects.get(username='admin')
+
+        measurement = Measurement.objects.get(measurementType='Temperature')
+        self.client.get("/measurement_details/" + str(measurement.pk), follow=True)        
+        oldValue = measurement.value
+        # print("old value:", oldValue)
+
+        # change instance (isWorking = False)
+        measurement = Measurement.objects.get(measurementType='Temperature')
+        measurement.isWorking = True
+        measurement.save()
+
+        self.client.get("/measurement_details/" + str(measurement.pk), follow=True)
+        measurement = Measurement.objects.get(measurementType='Temperature')
+        newValue = measurement.value
+        # print("new value:", newValue)
+
+        # res = measurement.isWorking
+        self.assertNotEqual(oldValue, newValue)
+
+
+    def test__if_value_not_update(self):
+        self.client.login(username='admin', password='admin')
+        User.objects.get(username='admin')
+
+        measurement = Measurement.objects.get(measurementType='Temperature')
+        self.client.get("/measurement_details/" + str(measurement.pk), follow=True)   
+        oldValue = measurement.value
+
+        # change instance (isWorking = False)
+        measurement.isWorking = False
+        measurement.save()
+
+        self.client.get("/measurement_details/" + str(measurement.pk), follow=True)
+        measurement = Measurement.objects.get(measurementType='Temperature')
+        newValue = measurement.value
+        # print("new value:", newValue)
+
+        # res = measurement.isWorking
+        self.assertEqual(oldValue, newValue)
+    
     def tearDown(self):
         Archive.objects.all().delete()
         Measurement.objects.all().delete()
