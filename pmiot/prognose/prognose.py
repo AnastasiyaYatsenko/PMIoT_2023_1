@@ -35,7 +35,6 @@ def prepare_data(id):
     data['timestamp'] = pd.to_datetime(data['timestamp'])
     # datetime to seconds
     data['timestamp'] = data['timestamp'].astype(int) // 10**9
-    #data = data.drop(columns=['timestamp'])
     return data
 
 def custom_linear_regression(data, dt):
