@@ -47,8 +47,14 @@ Repository for PMIoT project of the group 2023-1 (Arkhypov, Kryvous, Karnaukh, Y
    ```
    pip install Pillow
    ```
+      
+7. Встановлюємо пакет scikit-learn для роботи функцій прогнозування:
+ 
+   ```
+   pip install scikit-learn
+   ```
    
-7. Запускаємо локальний сервер:
+8. Запускаємо локальний сервер:
    
    ```
    python manage.py runserver
