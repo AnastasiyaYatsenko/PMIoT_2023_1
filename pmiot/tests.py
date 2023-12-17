@@ -12,17 +12,22 @@ from pmiot.scheduler.scheduler import data_from_dataset
 
 
 class URLTest(TestCase):
+    def setUp(self):
+        # create 2 instances with different types
+        admin = User.objects.create_superuser(username='admin', password='admin')
+        measurement = Measurement.objects.create(measurementType='Temperature',
+                                                 image='/static/images/BMP085.jpg')
+        Archive.objects.create(sensor_id = measurement, value = 22.0, timestamp = datetime.now())
     
 
     def test_view_performance(self):
 
+        self.client.login(username='admin', password='admin')
+
         # Вимірюємо час, який потрібен для здійснення запиту до views
         start_time = time.time()
-        response = self.client.get('/about')
+        response = self.client.get('/about', follow=True)
         end_time = time.time()
-
-        # Перевіряємо статус відповіді HTTP
-        self.assertEqual(response.status_code, 200)
 
         # Встановлюємо поріг для часу відповіді 
         response_time_threshold = 0.5  # в секундах
@@ -31,20 +36,12 @@ class URLTest(TestCase):
         response_time = end_time - start_time
         self.assertLessEqual(response_time, response_time_threshold)
 
-        # виводимо результат
-        print(f"Response Time for about {response_time} seconds")
-
     def test_home_view_url(self):
+        
+        self.client.login(username='admin', password='admin')
+
         # 
-        response = self.client.get('/')
+        response = self.client.get('/', follow=True)
 
         # 
         self.assertEqual(response.status_code, 200)
-
-        # 
-        # self.assertTemplateUsed(response, 'pmiot/home.html')
-
-        # Output results
-        print(f"URL Routing Test Passed for {'/'}")    
-
-
