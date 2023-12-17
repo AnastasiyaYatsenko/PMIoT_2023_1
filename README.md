@@ -42,19 +42,31 @@ Repository for PMIoT project of the group 2023-1 (Arkhypov, Kryvous, Karnaukh, Y
    python -m pip install django
    ```
    
-6. Встановлюємо пакет Pillow для роботи з картинками:
+6. Встановлюємо пакет pytz для роботи з таймзонами:
+ 
+   ```
+   pip install pytz
+   ```
+   
+7. Встановлюємо пакет pandas для роботи з датасетом:
+ 
+   ```
+   pip install pandas
+   ```
+      
+8. Встановлюємо пакет Pillow для роботи з картинками:
  
    ```
    pip install Pillow
    ```
       
-7. Встановлюємо пакет scikit-learn для роботи функцій прогнозування:
+9. Встановлюємо пакет scikit-learn для роботи функцій прогнозування:
  
    ```
    pip install scikit-learn
    ```
    
-8. Запускаємо локальний сервер:
+10. Запускаємо локальний сервер:
    
    ```
    python manage.py runserver
