@@ -128,3 +128,9 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+MQTT_SERVER = '194.28.180.83'
+MQTT_PORT = 9883
+MQTT_KEEPALIVE = 60
+MQTT_USER = 'student'
+MQTT_PASSWORD = 'pmiot'
