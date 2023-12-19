@@ -90,36 +90,83 @@ def process_data(id=-1):
     # debug
     # print(dt)
 
-    def on_connect(mqtt_client, userdata, flags, rc):
-        if rc == 0:
-            print('Connected successfully')
-            mqtt_client.subscribe('django/mqtt')
-        else:
-            print('Bad connection. Code:', rc)
+    # try to connect to server
+    try:
+        def on_connect(mqtt_client, userdata, flags, rc):
+            if rc == 0:
+                print('Connected successfully')
+                mqtt_client.subscribe('django/mqtt')
+            else:
+                print('Bad connection. Code:', rc)
 
-    def on_message(mqtt_client, userdata, msg):
-        print(f'Received message on topic: {msg.topic} with payload: {msg.payload}')
+        def on_message(mqtt_client, userdata, msg):
+            print(f'Received message on topic: {msg.topic} with payload: {msg.payload}')
 
-    client = mqtt.Client()
-    client.on_connect = on_connect
-    client.on_message = on_message
-    client.username_pw_set(settings.MQTT_USER, settings.MQTT_PASSWORD)
-    client.connect(
-        host=settings.MQTT_SERVER,
-        port=settings.MQTT_PORT
-    )
+        client = mqtt.Client()
+        client.on_connect = on_connect
+        client.on_message = on_message
+        client.username_pw_set(settings.MQTT_USER, settings.MQTT_PASSWORD)
 
-    client.loop_start()
+        client.connect(
+            host=settings.MQTT_SERVER,
+            port=settings.MQTT_PORT
+        )
 
-    rc, mid = client.publish('test topic', 'test message')
+        # try to publish test data
+        try:
+            client.loop_start()
+            rc, mid = client.publish('test topic', 'test message')
+            client.loop_stop()
+            print(rc, mid)
+        except Exception as e:
+            print(f"Error publishing message: {e}")
 
-    client.loop_stop()
+        # try to publish data
+        try:
+            for pair in data.items():
+                # publish data
+                publish_data(client, pair)
+                # debug
+                # print('Pair:', pair)
+        except Exception as e:
+            print(f"Error publishing message: {e}")
 
-    print(rc, mid)
+    except ConnectionError as e:
+        print(f"Error connecting to MQTT broker: {e}")
+
+    client.disconnect()
 
     write_to_db(dt, data)
 
+# get topics for all sensors
+def get_all_topics():
+    # get all sensors
+    sensors = Measurement.objects.all()
+    # create topics (measurementType) for all sensors
+    topics = {i.pk: i.measurementType for i in sensors}
+    # debug
+    # print('Topics:', topics)
+    return topics
 
+# get topic for sensor by id
+def get_topic(id):
+    return get_all_topics().get(id)
+
+# send data to server
+def publish_data(client, data):
+    #prepare data
+    # get sensor id and value
+    key, value = data
+    # get topic
+    topic = get_topic(key)
+    # debug
+    # print('Topic - value:', topic, '-', value)
+
+    # publish data
+    rc, mid = client.publish(topic, value)
+    # debug
+    # print('Publish result:', rc, mid)
+ 
 def write_to_db(dt, data):
     # debug
     # print('infunc', data)
@@ -131,4 +178,3 @@ def write_to_db(dt, data):
         measurement.save()
         archive = Archive(sensor_id=measurement, value=value, timestamp=dt)
         archive.save()
-        
