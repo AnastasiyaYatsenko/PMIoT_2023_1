@@ -95,12 +95,12 @@ def process_data(id=-1):
         def on_connect(mqtt_client, userdata, flags, rc):
             if rc == 0:
                 print('Connected successfully')
-                mqtt_client.subscribe('django/mqtt')
+                mqtt_client.subscribe('django/mqtt/{topic}')
             else:
                 print('Bad connection. Code:', rc)
 
         def on_message(mqtt_client, userdata, msg):
-            print(f'Received message on topic: {msg.topic} with payload: {msg.payload}')
+            print(f'Received message on topic: {msg.topic} with payload: {msg.payload.decode("utf-8")}')
 
         client = mqtt.Client()
         client.on_connect = on_connect
@@ -166,15 +166,43 @@ def publish_data(client, data):
     rc, mid = client.publish(topic, value)
     # debug
     # print('Publish result:', rc, mid)
+def process_received_data(topic, payload):
+    try:
+        global dt, data
+
+        # Assuming payload format is sensor_type:value
+        parts = payload.decode('utf-8').split(':')
+        if len(parts) == 2:
+            sensor_type, value = parts
+            timestamp_str = datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+
+            # Convert timestamp to datetime object
+            dt = datetime.strptime(timestamp_str, '%Y-%m-%dT%H:%M:%S.%fZ')
+
+            # Update data with sensor values
+            data[sensor_type] = value
+        else:
+            print('Received data has an unexpected format for topic', topic)
+    except Exception as e:
+        print('Error processing received data:', e)
+
  
 def write_to_db(dt, data):
-    # debug
-    # print('infunc', data)
-    for sensor_id, value in data.items():
-        # debug
-        # print(sensor_id)
-        measurement = Measurement.objects.get(pk=sensor_id)
-        measurement.value = value
-        measurement.save()
-        archive = Archive(sensor_id=measurement, value=value, timestamp=dt)
-        archive.save()
+    for sensor_type, value in data.items():
+        try:
+            # Get the measurement corresponding to the sensor_type
+            measurement = Measurement.objects.get(measurementType=sensor_type)
+
+            # Update the measurement value
+            measurement.value = value
+            measurement.save()
+
+            # Create an Archive entry
+            archive = Archive(sensor_id=measurement, value=value, timestamp=dt)
+            archive.save()
+
+            print(f"Data for {sensor_type} written to the database.")
+        except Measurement.DoesNotExist:
+            print(f"Measurement for {sensor_type} does not exist.")
+        except Exception as e:
+            print(f"Error writing data to the database: {e}")
