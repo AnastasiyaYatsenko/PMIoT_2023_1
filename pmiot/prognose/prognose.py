@@ -56,7 +56,6 @@ def custom_linear_regression(data, dt):
     # predict
     predicted_value = model.predict([[int(dt.timestamp())]])[0]
     # debug
-    # print(f'Predicted value on {dt}: {predicted_value}')
     return predicted_value
 
 def custom_mlp_regression(data, dt):
@@ -69,7 +68,6 @@ def custom_mlp_regression(data, dt):
     # predict
     predicted_value = model.predict([[int(dt.timestamp())]])[0]
     # debug
-    # print(f'Predicted value on {dt}: {predicted_value}')
     return predicted_value
 
 def custom_decision_trees_regression(data, dt):
@@ -82,11 +80,10 @@ def custom_decision_trees_regression(data, dt):
     # predict
     predicted_value = model.predict([[int(dt.timestamp())]])[0]
     # debug
-    # print(f'Predicted value on {dt}: {predicted_value}')
     return predicted_value
 
+
 def custom_Bayesian_ridge_regression(data, dt):
-    # print("In Bayes")
     # split timestamp and value
     X_train, y_train = data[['timestamp']], data['value']
     # create model
@@ -95,8 +92,5 @@ def custom_Bayesian_ridge_regression(data, dt):
     model.fit(X_train, y_train)
     # predict
     predicted_value = model.predict([[int(dt.timestamp())]])[0]
-    # print(predicted_value)
-    # print("---")
     # debug
-    # print(f'Predicted value on {dt}: {predicted_value}')
     return predicted_value
