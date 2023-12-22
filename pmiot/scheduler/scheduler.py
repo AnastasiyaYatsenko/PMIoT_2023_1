@@ -1,4 +1,6 @@
 from datetime import datetime
+import time
+
 import os
 import pandas as pd
 
@@ -95,7 +97,7 @@ def process_data(id=-1):
         def on_connect(mqtt_client, userdata, flags, rc):
             if rc == 0:
                 print('Connected successfully')
-                mqtt_client.subscribe('django/mqtt/{topic}')
+                mqtt_client.subscribe('django/mqtt')
             else:
                 print('Bad connection. Code:', rc)
 
@@ -108,16 +110,23 @@ def process_data(id=-1):
         client.on_message = on_message
         client.username_pw_set(settings.MQTT_USER, settings.MQTT_PASSWORD)
 
-        client.connect(
-            host=settings.MQTT_SERVER,
-            port=settings.MQTT_PORT
-        )
+        try:
+            client.connect(
+                host=settings.MQTT_SERVER,
+                port=settings.MQTT_PORT
+            )
+        except Exception as e:
+            print(f"Error connecting to MQTT server: {e}")
 
+        # create a new thread 
+        client.loop_start()
+
+        # subscriptions
+        for value in get_all_topics().values():
+            client.subscribe(value)
         # try to publish test data
         try:
-            client.loop_start()
             rc, mid = client.publish('test topic', 'test message')
-            client.loop_stop()
             print(rc, mid)
         except Exception as e:
             print(f"Error publishing message: {e}")
@@ -135,6 +144,11 @@ def process_data(id=-1):
     except ConnectionError as e:
         print(f"Error connecting to MQTT broker: {e}")
 
+    # waiting for reply
+    time.sleep(5)
+
+    print("Disconnecting MQTT client...")
+    client.loop_stop()
     client.disconnect()
 
 
@@ -166,39 +180,41 @@ def publish_data(client, data):
     rc, mid = client.publish(topic, value)
     # debug
     # print('Publish result:', rc, mid)
-def process_received_data(dt, data, topic, payload):
+
+
+def process_received_data(topic, payload):
     try:
-        # Assuming payload format is sensor_type:value
-        parts = payload.decode('utf-8').split(':')
-        if len(parts) == 2:
-            sensor_type, value = parts
-            timestamp_str = datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+        # debug
+        # print('Topic:', topic)
+        # print('Payload:', payload)
 
-            # Convert timestamp to datetime object
-            dt = datetime.strptime(timestamp_str, '%Y-%m-%dT%H:%M:%S.%fZ')
+        # get data
+        sensor_type = topic
+        value = payload.decode("utf-8")
 
-            # Update data with sensor values
-            data[sensor_type] = value
+        # debug
+        # print('Topic:', sensor_type)
+        # print('Value:', value)
 
-            try:
-                # Get the measurement corresponding to the sensor_type
-                measurement = Measurement.objects.get(measurementType=sensor_type)
+        # Convert timestamp to datetime object
+        dt = datetime.now(KyivTz)
 
-                # Update the measurement value
-                measurement.value = value
-                measurement.save()
+        try:
+            # Get the measurement corresponding to the sensor_type
+            measurement = Measurement.objects.get(measurementType=sensor_type)
 
-                # Create an Archive entry
-                archive = Archive(sensor_id=measurement, value=value, timestamp=dt)
-                archive.save()
+            # Update the measurement value
+            measurement.value = value
+            measurement.save()
 
-                print(f"Data for {sensor_type} written to the database.")
-            except Measurement.DoesNotExist:
-                print(f"Measurement for {sensor_type} does not exist.")
-            except Exception as e:
-                print(f"Error writing data to the database: {e}")
+            # Create an Archive entry
+            archive = Archive(sensor_id=measurement, value=value, timestamp=dt)
+            archive.save()
 
-        else:
-            print('Received data has an unexpected format for topic', topic)
+            print(f"Data for {sensor_type} written to the database.")
+        except Measurement.DoesNotExist:
+            print(f"Measurement for {sensor_type} does not exist.")
+        except Exception as e:
+            print(f"Error writing data to the database: {e}")
     except Exception as e:
-        print('Error processing received data:', e)
+        print('Error processing received data:', e)            
