@@ -1,5 +1,5 @@
-from django.db import models
-
+# from django.db import models
+from djongo import models
 
 class Measurement(models.Model):
     measurementName = models.CharField(default='Name', max_length=250)
