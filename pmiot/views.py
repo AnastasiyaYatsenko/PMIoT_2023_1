@@ -12,10 +12,14 @@ from django.conf import settings
 from django.contrib import messages
 
 from pmiot.models import Measurement
-from pmiot.forms import MeasurementForm, LoginForm
+# from pmiot.forms import MeasurementForm, LoginForm
+from pmiot.forms import LoginForm
+
+from django.conf import settings
+
+from .apps import MongoDB
 
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 
 from pmiot.scheduler.scheduler import process_data
@@ -23,33 +27,30 @@ from pmiot.prognose.prognose import prognose
 
 KyivTz = pytz.timezone("Europe/Kiev")
 
+
 class MeasurementList(LoginRequiredMixin, generic.ListView):
-    model = Measurement
-    context_object_name = 'measurements'
     template_name = 'measurement_list.html'
     login_url = "/login/"
     redirect_field_name = "login"
 
     def get(self, request, *args, **kwargs):
-        # try:
-        #     file_path = os.path.join(settings.BASE_DIR, 'test_data.txt')
-        #     measurement_file = open(file_path, 'r')
+        
+        connection = MongoDB()
 
-        #     for value in measurement_file:
-        #         Measurement.objects.get_or_create(value=value)
+        db_measurements = connection.find_measurements()
+        measurements = [Measurement(doc) for doc in db_measurements]
+        
+        # debug
+        print('Measurements:', measurements)
+        context = {'measurements': measurements}
+        return render(request, self.template_name, context)
 
-        # except IOError:
-        #     pass
-
-        return super(MeasurementList, self).get(request, *args, **kwargs)
-
-
-class MeasurementCreate(LoginRequiredMixin, generic.CreateView):
-    form_class = MeasurementForm
-    template_name = 'pmiot/create_measurement.html'
-    success_url = reverse_lazy('measurement_list')
-    login_url = "/login/"
-    redirect_field_name = "login"
+# class MeasurementCreate(LoginRequiredMixin, generic.CreateView):
+#     form_class = MeasurementForm
+#     template_name = 'pmiot/create_measurement.html'
+#     success_url = reverse_lazy('measurement_list')
+#     login_url = "/login/"
+#     redirect_field_name = "login"
 
 # show data about sensor
 @login_required(login_url="/login/")
