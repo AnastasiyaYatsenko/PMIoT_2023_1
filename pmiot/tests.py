@@ -113,7 +113,91 @@ class MongoTests(TestCase):
 
     # check results
     self.assertTrue(true)
+    
+    # test for changing measurement
+    def test__update_sensor(self):
+        
+        # get measurement
+        sensor = Measurement.objects.get(measurementType='Humidity')
+        old_value = sensor.value
 
+        # change value
+        sensor.value = sensor.value + 10
+        sensor.save()
+        new_value = sensor.value
+
+        # print results
+        print()
+        print(inspect.getframeinfo(inspect.currentframe()).function)
+        print(f'Value: {old_value} -> {new_value}')
+        print('------------')
+
+        # check results
+        self.assertNotEqual(old_value, new_value)
+    
+    # test for deleting measurement
+    def test__delete_sensor(self):
+        
+        # get measurement
+        sensor = Measurement.objects.get(measurementType='Humidity')
+        start_count = Measurement.objects.count()
+
+        # delete sensor
+        sensor.delete()
+        end_count = Measurement.objects.count()
+
+        # print results
+        print()
+        print(inspect.getframeinfo(inspect.currentframe()).function)
+        print(f'Count: {start_count} -> {end_count}')
+        print('------------')
+
+        # check results
+        self.assertEqual(end_count, start_count - 1)
+
+    # test for deleting archive
+    def test__delete_archive(self):
+        
+        # get measurement
+        sensor = Measurement.objects.get(measurementType='Humidity')
+        # create archive
+        archive = Archive.objects.get(sensor_id=sensor)
+        start_count = Archive.objects.count()
+
+        # delete archive
+        archive.delete()
+        end_count = Archive.objects.count()
+
+        # print results
+        print()
+        print(inspect.getframeinfo(inspect.currentframe()).function)
+        print(f'Count: {start_count} -> {end_count}')
+        print('------------')
+
+        # check results
+        self.assertEqual(end_count, start_count - 1)
+    
+    # test for deleting archive
+    def test__delete_sensor_with_archive(self):
+        
+        # get measurement
+        sensor = Measurement.objects.get(measurementType='Humidity')
+        # create archive
+        archive = Archive.objects.get(sensor_id=sensor)
+        start_count = Archive.objects.count()
+
+        # delete sensor
+        sensor.delete()
+        end_count = Archive.objects.count()
+
+        # print results
+        print()
+        print(inspect.getframeinfo(inspect.currentframe()).function)
+        print(f'Count: {start_count} -> {end_count}')
+        print('------------')
+
+        # check results
+        self.assertEqual(end_count, start_count - 1)
 # class FunctionTests(TestCase):
 
 #     # prepare data for every test
