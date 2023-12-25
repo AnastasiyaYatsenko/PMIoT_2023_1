@@ -12,6 +12,107 @@ from pmiot.scheduler.scheduler import data_from_dataset
 
 from django.db import IntegrityError
 
+class MongoTests(TestCase):
+
+  # prepare data for every test
+  def setUp(self):
+        
+    # create instance of sensor
+    sensor = Measurement.objects.create(measurementType='Humidity')
+    # create instance of archive
+    archive = Archive.objects.create(sensor_id=sensor, value=sensor.value)
+
+    # print results
+    print()
+    print(inspect.getframeinfo(inspect.currentframe()).function)
+    print('Number of sensors:', len(Measurement.objects.all()))
+    print('Number of archives:', len(Archive.objects.all()))
+
+    pass
+
+  # test for getting measurement
+  def test__get_sensor(self):
+        
+    try:
+      # get measurement
+      sensor = Measurement.objects.get(measurementType='Humidity')
+            
+      # print results
+      print()
+      print(inspect.getframeinfo(inspect.currentframe()).function)
+      print(f'Sensor: {sensor}')
+      print('------------')
+      true = True
+    except Measurement.DoesNotExist:
+      print('Measurement not found!')
+      true = False
+
+    # check results
+    self.assertTrue(true)
+    
+  # test for getting archive
+  def test__get_archive(self):
+        
+    try:
+      # get measurement
+      sensor = Measurement.objects.get(measurementType='Humidity')
+      # get archive
+      archive = Archive.objects.get(sensor_id=sensor)
+
+      # print results
+      print()
+      print(inspect.getframeinfo(inspect.currentframe()).function)
+      print(f'Archive: {archive}')
+      print('------------')
+      true = True
+    except Archive.DoesNotExist:
+      print('Archive not found!')
+      true = False
+
+    # check results
+    self.assertTrue(true)
+    
+  # test for creating measurement
+  def test__insert_sensor(self):
+        
+    try:
+      # create measurement
+      sensor = Measurement.objects.create(measurementType='Temperature')
+
+      # print results
+      print()
+      print(inspect.getframeinfo(inspect.currentframe()).function)
+      print(f'Sensor: {sensor}')
+      print('------------')
+      true = True
+    except IntegrityError:
+      print('Measurement not created!')
+      true = False
+
+    # check results
+    self.assertTrue(true)
+
+  # test for creating archive
+  def test__insert_archive(self):
+        
+    try:
+      # create measurement
+      sensor = Measurement.objects.create(measurementType='Temperature')
+      # create archive
+      archive = Archive.objects.create(sensor_id=sensor, value=sensor.value)
+
+      # print results
+      print()
+      print(inspect.getframeinfo(inspect.currentframe()).function)
+      print(f'Archive: {archive}')
+      print('------------')
+      true = True
+    except IntegrityError:
+      print('Archive not created!')
+      true = False
+
+    # check results
+    self.assertTrue(true)
 
 # class FunctionTests(TestCase):
 
