@@ -83,15 +83,13 @@ DATABASES = {
     'default': {
         'ENGINE': 'djongo',
         'NAME': 'SeriesDB',
+        'CLIENT': {
+            'host': 'mongodb://localhost:27017/',
+            'username': 'student',
+            'password': 'pmiot2023'
+        }
     }
 }
-'''
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}'''
 
 
 # Password validation

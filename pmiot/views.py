@@ -2,6 +2,8 @@ from datetime import datetime
 import pytz
 import os
 
+from bson import ObjectId
+
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
@@ -30,17 +32,13 @@ class MeasurementList(LoginRequiredMixin, generic.ListView):
     login_url = "/login/"
     redirect_field_name = "login"
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        # debug
+        # print(queryset)
+        return queryset
+
     def get(self, request, *args, **kwargs):
-        # try:
-        #     file_path = os.path.join(settings.BASE_DIR, 'test_data.txt')
-        #     measurement_file = open(file_path, 'r')
-
-        #     for value in measurement_file:
-        #         Measurement.objects.get_or_create(value=value)
-
-        # except IOError:
-        #     pass
-
         return super(MeasurementList, self).get(request, *args, **kwargs)
 
 
@@ -59,13 +57,14 @@ def measurement_details(request, measurement_id):
     # update sensors
     process_data(measurement_id)
     # get sensor by id
-    sensor = get_object_or_404(Measurement, pk=measurement_id)
+    measurement_obj_id = ObjectId(measurement_id)
+    sensor = get_object_or_404(Measurement, _id=measurement_obj_id)
 
     is_comfortable = (sensor.value > sensor.min_comfort) and (sensor.value < sensor.max_comfort)
     if ((not is_comfortable) and
             ((not sensor.is_notified) or
              (sensor.is_notified and ((datetime.now(KyivTz)-sensor.last_notified).total_seconds() > 30 ))))\
-            and (sensor.need_notification and sensor.isWorking): #300
+            and (sensor.need_notification and sensor.isWorking):
         msg = "Attention! The sensor value is "
         if sensor.value < sensor.min_comfort:
             msg += "lower than comfortable!"
@@ -89,7 +88,8 @@ def change_value(request, measurement_id):
     # clear previous messages
     storage = messages.get_messages(request)
     # get sensor by id
-    sensor = get_object_or_404(Measurement, pk=measurement_id)
+    measurement_obj_id = ObjectId(measurement_id)
+    sensor = get_object_or_404(Measurement, _id=measurement_obj_id)
     # get new value from form
     new_value = bool(request.POST['enter_value'])
     # check if value is in borders
@@ -112,7 +112,8 @@ def about(request):
 def login_view(request):
     if request.method == 'POST':
         form = LoginForm(request.POST)
-        print(form)
+        # debug
+        # print(form)
         if form.is_valid():
             user = authenticate(username=form.cleaned_data['username'],
                                 password=form.cleaned_data['password'])

@@ -12,6 +12,8 @@ KyivTz = pytz.timezone("Europe/Kiev")
 
 from pmiot.models import Measurement, Archive
 
+from bson import ObjectId
+
 # variables
 num_row = 14570
 measurement_types = ['Gas', 'Humidity', 'Light', 'Temperature']
@@ -52,7 +54,8 @@ def data_from_dataset(id=-1):
         else:
             # get working sensor
             try:
-                sensors = Measurement.objects.filter(pk=id, isWorking=True)
+                sensor_id = ObjectId(id)
+                sensors = Measurement.objects.filter(_id=sensor_id)
             except Measurement.DoesNotExist:
                 sensors = None
             # debug
@@ -64,9 +67,13 @@ def data_from_dataset(id=-1):
         else:
             # link sensors and values
             for s in sensors:
-                col = dict.get(s.measurementType)
-                val = ds[col][num_row]
-                result.update({s.pk: val})
+                if s.isWorking:
+                    col = dict.get(s.measurementType)
+                    val = ds[col][num_row]
+                    result.update({s.measurement_id: val})
+                else:
+                    # debug
+                    print(f'Sensor {s.measurementType} not working!')
                 # debug
                 # print('Value:', val)
 
@@ -127,7 +134,7 @@ def process_data(id=-1):
         # try to publish test data
         try:
             rc, mid = client.publish('test topic', 'test message')
-            print(rc, mid)
+            # print(rc, mid)
         except Exception as e:
             print(f"Error publishing message: {e}")
 
@@ -157,7 +164,7 @@ def get_all_topics():
     # get all sensors
     sensors = Measurement.objects.all()
     # create topics (measurementType) for all sensors
-    topics = {i.pk: i.measurementType for i in sensors}
+    topics = {i.measurement_id: i.measurementType for i in sensors}
     # debug
     # print('Topics:', topics)
     return topics
@@ -217,4 +224,4 @@ def process_received_data(topic, payload):
         except Exception as e:
             print(f"Error writing data to the database: {e}")
     except Exception as e:
-        print('Error processing received data:', e)            
+        print('Error processing received data:', e)

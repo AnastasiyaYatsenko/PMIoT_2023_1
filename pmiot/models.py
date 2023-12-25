@@ -1,7 +1,13 @@
 # from django.db import models
 from djongo import models
+from bson import ObjectId
+
+from datetime import datetime
+from django.utils import timezone
+
 
 class Measurement(models.Model):
+    _id = models.ObjectIdField(primary_key=True, default=ObjectId, editable=False)
     measurementName = models.CharField(default='Name', max_length=250)
     measurementType = models.CharField(default='Type', max_length=250)
     description = models.CharField(max_length=250, blank=True, null=True)
@@ -22,17 +28,21 @@ class Measurement(models.Model):
     class Meta:
         ordering = ['measurementName']
 
-    def __unicode__(self):
-        return self.value
+    @property
+    def measurement_id(self):
+        return str(self._id)
+
+    def __str__(self):
+        return f'{self.measurement_id}: {self.measurementType} - {self.value}'
 
 
 class Archive(models.Model):
-    sensor_id = models.ForeignKey(Measurement,on_delete=models.CASCADE)
+    sensor_id = models.ForeignKey(Measurement, on_delete=models.CASCADE)
     value = models.FloatField(default=0)
-    timestamp = models.DateTimeField(default=None)
+    timestamp = models.DateTimeField(default=timezone.now)
 
     class Meta:
         ordering = ['timestamp']
 
-    # def __unicode__(self):
-    #     return self.value
+    def __str__(self):
+        return f'{self.sensor_id.measurement_id} - {self.value} - {self.timestamp}'

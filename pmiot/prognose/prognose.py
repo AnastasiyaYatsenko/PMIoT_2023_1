@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 
+from bson import ObjectId
+
 from sklearn.linear_model import LinearRegression
 from sklearn.neural_network import MLPRegressor
 from sklearn.linear_model import BayesianRidge
@@ -37,13 +39,14 @@ def prognose(id):
 
 def prepare_data(id):
     # get records by sensor_id
-    archive = Archive.objects.filter(sensor_id=id)
+    obj_id = ObjectId(id)
+    archive = Archive.objects.filter(sensor_id=obj_id)
     # transform data to dataframe
     data = pd.DataFrame(list(archive.values('timestamp', 'value')))
     data['timestamp'] = pd.to_datetime(data['timestamp'])
     # datetime to seconds
     data['timestamp'] = data['timestamp'].astype(np.int64) // 10**9
-    #data = data.drop(columns=['timestamp'])
+    # data = data.drop(columns=['timestamp'])
     return data
 
 def custom_linear_regression(data, dt):
@@ -81,7 +84,6 @@ def custom_decision_trees_regression(data, dt):
     predicted_value = model.predict([[int(dt.timestamp())]])[0]
     # debug
     return predicted_value
-
 
 def custom_Bayesian_ridge_regression(data, dt):
     # split timestamp and value

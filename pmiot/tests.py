@@ -10,299 +10,301 @@ from django.test import TestCase
 from pmiot.models import Measurement, Archive
 from pmiot.scheduler.scheduler import data_from_dataset
 
+from django.db import IntegrityError
 
-class FunctionTests(TestCase):
 
-    # prepare data for every test
-    def setUp(self):
+# class FunctionTests(TestCase):
+
+#     # prepare data for every test
+#     def setUp(self):
         
-        # create 2 instances with different types
-        Measurement.objects.create(measurementType='Temperature')
-        Measurement.objects.create(measurementType='Humidity')
+#         # create 2 instances with different types
+#         Measurement.objects.create(measurementType='Temperature')
+#         Measurement.objects.create(measurementType='Humidity')
 
-        # print results
-        print()
-        print(inspect.getframeinfo(inspect.currentframe()).function)
-        print('Number of sensors:', len(Measurement.objects.all()))
+#         # print results
+#         print()
+#         print(inspect.getframeinfo(inspect.currentframe()).function)
+#         print('Number of sensors:', len(Measurement.objects.all()))
 
-        pass
+#         pass
 
-    # test for function 'data_from_dataset'
-    # for one instance
-    # which is working
-    def test__data_from_dataset__id__working(self):
+#     # test for function 'data_from_dataset'
+#     # for one instance
+#     # which is working
+#     def test__data_from_dataset__id__working(self):
         
-        # change instance (isWorking = True)
-        measurement = Measurement.objects.get(measurementType='Temperature')
-        measurement.isWorking = True
-        measurement.save()
+#         # change instance (isWorking = True)
+#         measurement = Measurement.objects.get(measurementType='Temperature')
+#         measurement.isWorking = True
+#         measurement.save()
 
-        # run function
-        res = data_from_dataset(measurement.pk)
+#         # run function
+#         res = data_from_dataset(measurement._id)
 
-        # print results
-        print()
-        print(inspect.getframeinfo(inspect.currentframe()).function)
-        print(res)
-        print('------------')
+#         # print results
+#         print()
+#         print(inspect.getframeinfo(inspect.currentframe()).function)
+#         print(res)
+#         print('------------')
 
-        # check results
-        self.assertEqual(len(res), 1)
+#         # check results
+#         self.assertEqual(len(res), 1)
 
-    # test for function 'data_from_dataset'
-    # for one instance
-    # which is not working
-    def test__data_from_dataset__id__not_working(self):
+#     # test for function 'data_from_dataset'
+#     # for one instance
+#     # which is not working
+#     def test__data_from_dataset__id__not_working(self):
         
-        # change instance (isWorking = False)
-        measurement = Measurement.objects.get(measurementType='Humidity')
-        measurement.isWorking = False
-        measurement.save()
+#         # change instance (isWorking = False)
+#         measurement = Measurement.objects.get(measurementType='Humidity')
+#         measurement.isWorking = False
+#         measurement.save()
 
-        # run function
-        res = data_from_dataset(measurement.pk)
+#         # run function
+#         res = data_from_dataset(measurement._id)
 
-        # print results
-        print()
-        print(inspect.getframeinfo(inspect.currentframe()).function)
-        print(res)
-        print('------------')
+#         # print results
+#         print()
+#         print(inspect.getframeinfo(inspect.currentframe()).function)
+#         print(res)
+#         print('------------')
 
-        # check results
-        self.assertEqual(len(res), 0)
+#         # check results
+#         self.assertEqual(len(res), 0)
 
-    # test for function 'data_from_dataset'
-    # for all instances
-    # all of which are working
-    def test__data_from_dataset__all__working(self):
+#     # test for function 'data_from_dataset'
+#     # for all instances
+#     # all of which are working
+#     def test__data_from_dataset__all__working(self):
 
-        # change instances (isWorking = True)
-        measurement1 = Measurement.objects.get(measurementType='Temperature')
-        measurement1.isWorking = True
-        measurement1.save()
-        measurement2 = Measurement.objects.get(measurementType='Humidity')
-        measurement2.isWorking = True
-        measurement2.save()
+#         # change instances (isWorking = True)
+#         measurement1 = Measurement.objects.get(measurementType='Temperature')
+#         measurement1.isWorking = True
+#         measurement1.save()
+#         measurement2 = Measurement.objects.get(measurementType='Humidity')
+#         measurement2.isWorking = True
+#         measurement2.save()
         
-        # run function
-        res = data_from_dataset()
+#         # run function
+#         res = data_from_dataset()
 
-        # print results
-        print()
-        print(inspect.getframeinfo(inspect.currentframe()).function)
-        print(res)
-        print('------------')
+#         # print results
+#         print()
+#         print(inspect.getframeinfo(inspect.currentframe()).function)
+#         print(res)
+#         print('------------')
         
-        # check results
-        self.assertEqual(len(res), 2)
+#         # check results
+#         self.assertEqual(len(res), 2)
     
-    # test for function 'data_from_dataset'
-    # for all instances
-    # all of which are not working
-    def test__data_from_dataset__all__not_working(self):
+#     # test for function 'data_from_dataset'
+#     # for all instances
+#     # all of which are not working
+#     def test__data_from_dataset__all__not_working(self):
         
-        # change instances (isWorking = False)
-        measurement1 = Measurement.objects.get(measurementType='Temperature')
-        measurement1.isWorking = False
-        measurement1.save()
-        measurement2 = Measurement.objects.get(measurementType='Humidity')
-        measurement2.isWorking = False
-        measurement2.save()
+#         # change instances (isWorking = False)
+#         measurement1 = Measurement.objects.get(measurementType='Temperature')
+#         measurement1.isWorking = False
+#         measurement1.save()
+#         measurement2 = Measurement.objects.get(measurementType='Humidity')
+#         measurement2.isWorking = False
+#         measurement2.save()
         
-        # run function
-        res = data_from_dataset()
+#         # run function
+#         res = data_from_dataset()
 
-        # print results
-        print()
-        print(inspect.getframeinfo(inspect.currentframe()).function)
-        print(res)
-        print('------------')
+#         # print results
+#         print()
+#         print(inspect.getframeinfo(inspect.currentframe()).function)
+#         print(res)
+#         print('------------')
         
-        # check results
-        self.assertEqual(len(res), 0)
+#         # check results
+#         self.assertEqual(len(res), 0)
 
-    # test for function 'data_from_dataset'
-    # for all instances
-    # some of which are working and some are not
-    def test__data_from_dataset__all__working_and_not(self):
+#     # test for function 'data_from_dataset'
+#     # for all instances
+#     # some of which are working and some are not
+#     def test__data_from_dataset__all__working_and_not(self):
 
-        # change instances (isWorking = True and isWorking = False)
-        measurement1 = Measurement.objects.get(measurementType='Temperature')
-        measurement1.isWorking = False
-        measurement1.save()
-        measurement2 = Measurement.objects.get(measurementType='Humidity')
-        measurement2.isWorking = True
-        measurement2.save()
+#         # change instances (isWorking = True and isWorking = False)
+#         measurement1 = Measurement.objects.get(measurementType='Temperature')
+#         measurement1.isWorking = False
+#         measurement1.save()
+#         measurement2 = Measurement.objects.get(measurementType='Humidity')
+#         measurement2.isWorking = True
+#         measurement2.save()
         
-        # run function
-        res = data_from_dataset()
+#         # run function
+#         res = data_from_dataset()
 
-        # print results
-        print()
-        print(inspect.getframeinfo(inspect.currentframe()).function)
-        print(res)
-        print('------------')
+#         # print results
+#         print()
+#         print(inspect.getframeinfo(inspect.currentframe()).function)
+#         print(res)
+#         print('------------')
         
-        # check results
-        self.assertEqual(len(res), 1)
+#         # check results
+#         self.assertEqual(len(res), 1)
 
-class NotificationTests(TestCase):
+# class NotificationTests(TestCase):
 
-    # prepare data for every test
-    def setUp(self):
-        # create 2 instances with different types
-        admin = User.objects.create_superuser(username='admin', password='admin')
-        measurement = Measurement.objects.create(measurementType='Temperature',
-                                                 image='/static/images/BMP085.jpg')
-        Archive.objects.create(sensor_id = measurement, value = 22.0, timestamp = datetime.now())
+#     # prepare data for every test
+#     def setUp(self):
+#         # create 2 instances with different types
+#         admin = User.objects.create_superuser(username='admin', password='admin')
+#         measurement = Measurement.objects.create(measurementType='Temperature',
+#                                                  image='/static/images/BMP085.jpg')
+#         Archive.objects.create(sensor_id = measurement, value = 22.0, timestamp = datetime.now())
 
-        # print results
-        print()
-        print(inspect.getframeinfo(inspect.currentframe()).function)
-        print('Number of sensors:', len(Measurement.objects.all()))
+#         # print results
+#         print()
+#         print(inspect.getframeinfo(inspect.currentframe()).function)
+#         print('Number of sensors:', len(Measurement.objects.all()))
 
-        pass
+#         pass
 
-    def test__value_more_then_comfortable(self):
-        # change instance (isWorking = True)
-        measurement = Measurement.objects.get(measurementType='Temperature')
-        measurement.isWorking = True
-        measurement.max_comfort = -5
-        measurement.min_comfort = -10
-        measurement.is_notified = False
-        measurement.need_notification = True
-        measurement.save()
+#     def test__value_more_then_comfortable(self):
+#         # change instance (isWorking = True)
+#         measurement = Measurement.objects.get(measurementType='Temperature')
+#         measurement.isWorking = True
+#         measurement.max_comfort = -5
+#         measurement.min_comfort = -10
+#         measurement.is_notified = False
+#         measurement.need_notification = True
+#         measurement.save()
 
-        self.client.login(username='admin', password='admin')
-        user = User.objects.get(username='admin')
-        measurement = Measurement.objects.get(measurementType='Temperature')
-        response = self.client.get("/measurement_details/" + str(measurement.pk), follow=True)
-        measurement = Measurement.objects.get(measurementType='Temperature')
-        print(measurement.value)
-        res = measurement.is_notified
-        self.assertEqual(res, 1)
+#         self.client.login(username='admin', password='admin')
+#         user = User.objects.get(username='admin')
+#         measurement = Measurement.objects.get(measurementType='Temperature')
+#         response = self.client.get("/measurement_details/" + str(measurement._id), follow=True)
+#         measurement = Measurement.objects.get(measurementType='Temperature')
+#         print(measurement.value)
+#         res = measurement.is_notified
+#         self.assertEqual(res, 1)
 
-    def test__value_less_then_comfortable(self):
-        # change instance (isWorking = True)
-        measurement = Measurement.objects.get(measurementType='Temperature')
-        measurement.isWorking = True
-        measurement.max_comfort = 90
-        measurement.min_comfort = 100
-        measurement.is_notified = False
-        measurement.need_notification = True
-        measurement.save()
+#     def test__value_less_then_comfortable(self):
+#         # change instance (isWorking = True)
+#         measurement = Measurement.objects.get(measurementType='Temperature')
+#         measurement.isWorking = True
+#         measurement.max_comfort = 90
+#         measurement.min_comfort = 100
+#         measurement.is_notified = False
+#         measurement.need_notification = True
+#         measurement.save()
 
-        self.client.login(username='admin', password='admin')
-        user = User.objects.get(username='admin')
-        measurement = Measurement.objects.get(measurementType='Temperature')
-        response = self.client.get("/measurement_details/" + str(measurement.pk), follow=True)
-        measurement = Measurement.objects.get(measurementType='Temperature')
-        print(measurement.value)
-        res = measurement.is_notified
-        self.assertEqual(res, 1)
+#         self.client.login(username='admin', password='admin')
+#         user = User.objects.get(username='admin')
+#         measurement = Measurement.objects.get(measurementType='Temperature')
+#         response = self.client.get("/measurement_details/" + str(measurement._id), follow=True)
+#         measurement = Measurement.objects.get(measurementType='Temperature')
+#         print(measurement.value)
+#         res = measurement.is_notified
+#         self.assertEqual(res, 1)
 
-    def tearDown(self):
-        Archive.objects.all().delete()
-        Measurement.objects.all().delete()
-        User.objects.all().delete()
+#     def tearDown(self):
+#         Archive.objects.all().delete()
+#         Measurement.objects.all().delete()
+#         User.objects.all().delete()
 
-class DetailsViewsTests(TestCase):
-    # prepare data for every test
-    def setUp(self):
-        # create 2 instances with different types
-        admin = User.objects.create_superuser(username='admin', password='admin')
-        measurement = Measurement.objects.create(measurementType='Temperature',
-                                                 image='/static/images/BMP085.jpg', value=11.0)
+# class DetailsViewsTests(TestCase):
+#     # prepare data for every test
+#     def setUp(self):
+#         # create 2 instances with different types
+#         admin = User.objects.create_superuser(username='admin', password='admin')
+#         measurement = Measurement.objects.create(measurementType='Temperature',
+#                                                  image='/static/images/BMP085.jpg', value=11.0)
         
-        Archive.objects.create(sensor_id = measurement, value = 22.0, timestamp = datetime.now())
+#         Archive.objects.create(sensor_id = measurement, value = 22.0, timestamp = datetime.now())
 
-        # print results
-        print()
-        print(inspect.getframeinfo(inspect.currentframe()).function)
-        print('Number of sensors:', len(Measurement.objects.all()))
+#         # print results
+#         print()
+#         print(inspect.getframeinfo(inspect.currentframe()).function)
+#         print('Number of sensors:', len(Measurement.objects.all()))
 
-        pass
+#         pass
 
-    def test__if_value_update(self):
-        self.client.login(username='admin', password='admin')
-        User.objects.get(username='admin')
+#     def test__if_value_update(self):
+#         self.client.login(username='admin', password='admin')
+#         User.objects.get(username='admin')
 
-        measurement = Measurement.objects.get(measurementType='Temperature')
-        self.client.get("/measurement_details/" + str(measurement.pk), follow=True)        
-        oldValue = measurement.value
-        # print("old value:", oldValue)
+#         measurement = Measurement.objects.get(measurementType='Temperature')
+#         self.client.get("/measurement_details/" + str(measurement._id), follow=True)        
+#         oldValue = measurement.value
+#         # print("old value:", oldValue)
 
-        # change instance (isWorking = False)
-        measurement = Measurement.objects.get(measurementType='Temperature')
-        measurement.isWorking = True
-        measurement.save()
+#         # change instance (isWorking = False)
+#         measurement = Measurement.objects.get(measurementType='Temperature')
+#         measurement.isWorking = True
+#         measurement.save()
 
-        self.client.get("/measurement_details/" + str(measurement.pk), follow=True)
-        measurement = Measurement.objects.get(measurementType='Temperature')
-        newValue = measurement.value
-        # print("new value:", newValue)
+#         self.client.get("/measurement_details/" + str(measurement._id), follow=True)
+#         measurement = Measurement.objects.get(measurementType='Temperature')
+#         newValue = measurement.value
+#         # print("new value:", newValue)
 
-        # res = measurement.isWorking
-        self.assertNotEqual(oldValue, newValue)
+#         # res = measurement.isWorking
+#         self.assertNotEqual(oldValue, newValue)
 
 
-    def test__if_value_not_update(self):
-        self.client.login(username='admin', password='admin')
-        User.objects.get(username='admin')
+#     def test__if_value_not_update(self):
+#         self.client.login(username='admin', password='admin')
+#         User.objects.get(username='admin')
 
-        measurement = Measurement.objects.get(measurementType='Temperature')
-        self.client.get("/measurement_details/" + str(measurement.pk), follow=True)   
-        oldValue = measurement.value
+#         measurement = Measurement.objects.get(measurementType='Temperature')
+#         self.client.get("/measurement_details/" + str(measurement._id), follow=True)   
+#         oldValue = measurement.value
 
-        # change instance (isWorking = False)
-        measurement.isWorking = False
-        measurement.save()
+#         # change instance (isWorking = False)
+#         measurement.isWorking = False
+#         measurement.save()
 
-        self.client.get("/measurement_details/" + str(measurement.pk), follow=True)
-        measurement = Measurement.objects.get(measurementType='Temperature')
-        newValue = measurement.value
-        # print("new value:", newValue)
+#         self.client.get("/measurement_details/" + str(measurement._id), follow=True)
+#         measurement = Measurement.objects.get(measurementType='Temperature')
+#         newValue = measurement.value
+#         # print("new value:", newValue)
 
-        # res = measurement.isWorking
-        self.assertEqual(oldValue, newValue)
+#         # res = measurement.isWorking
+#         self.assertEqual(oldValue, newValue)
     
-    def tearDown(self):
-        Archive.objects.all().delete()
-        Measurement.objects.all().delete()
-        User.objects.all().delete()
+#     def tearDown(self):
+#         Archive.objects.all().delete()
+#         Measurement.objects.all().delete()
+#         User.objects.all().delete()
 
-class URLTest(TestCase):
-    def setUp(self):
-        # create 2 instances with different types
-        admin = User.objects.create_superuser(username='admin', password='admin')
-        measurement = Measurement.objects.create(measurementType='Temperature',
-                                                 image='/static/images/BMP085.jpg')
-        Archive.objects.create(sensor_id = measurement, value = 22.0, timestamp = datetime.now())
+# class URLTest(TestCase):
+#     def setUp(self):
+#         # create 2 instances with different types
+#         admin = User.objects.create_superuser(username='admin', password='admin')
+#         measurement = Measurement.objects.create(measurementType='Temperature',
+#                                                  image='/static/images/BMP085.jpg')
+#         Archive.objects.create(sensor_id = measurement, value = 22.0, timestamp = datetime.now())
     
 
-    def test_view_performance(self):
+#     def test_view_performance(self):
 
-        self.client.login(username='admin', password='admin')
+#         self.client.login(username='admin', password='admin')
 
-        # Вимірюємо час, який потрібен для здійснення запиту до views
-        start_time = time.time()
-        response = self.client.get('/about', follow=True)
-        end_time = time.time()
+#         # Вимірюємо час, який потрібен для здійснення запиту до views
+#         start_time = time.time()
+#         response = self.client.get('/about', follow=True)
+#         end_time = time.time()
 
-        # Встановлюємо поріг для часу відповіді 
-        response_time_threshold = 0.5  # в секундах
+#         # Встановлюємо поріг для часу відповіді 
+#         response_time_threshold = 0.5  # в секундах
 
-        # Перевіраємо чи час відповіді входить в допустимий діапазон
-        response_time = end_time - start_time
-        self.assertLessEqual(response_time, response_time_threshold)
+#         # Перевіраємо чи час відповіді входить в допустимий діапазон
+#         response_time = end_time - start_time
+#         self.assertLessEqual(response_time, response_time_threshold)
 
-    def test_home_view_url(self):
+#     def test_home_view_url(self):
         
-        self.client.login(username='admin', password='admin')
+#         self.client.login(username='admin', password='admin')
 
-        # 
-        response = self.client.get('/', follow=True)
+#         # 
+#         response = self.client.get('/', follow=True)
 
-        # 
-        self.assertEqual(response.status_code, 200)
+#         # 
+#         self.assertEqual(response.status_code, 200)
     

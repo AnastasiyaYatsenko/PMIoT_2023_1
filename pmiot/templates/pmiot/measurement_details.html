@@ -62,7 +62,7 @@ measurement details
               </label>
               <!-- </label> -->
               
-              <form method="POST" action="{% url 'change_value' details.id %}" class="details-form__form change-value">
+              <form method="POST" action="{% url 'change_value' details.measurement_id %}" class="details-form__form change-value">
                 {% csrf_token %}
                 <!-- {{ form.as_p }} -->
                 {% if details.isWorking == True %}
