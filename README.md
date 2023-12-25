@@ -230,3 +230,62 @@ password_file /etc/mosquitto/passwd
 4. Виконати команду systemctl restart mosquitto
 5. Переконатися, що сервіс запущено: systemctl status mosquitto
 Якщо все працює коректно, статус повинен бути active (running)
+
+# MongoDB
+
+Основні пункти для підготовки MongoDB:
+
+**Linux**
+
+- Встановлюємо пакет djongo:
+   ```
+   pip install djongo
+   ```
+- Встановлюємо пакет pymongo (конкретної версії):
+   ```
+   pip install pymongo==3.12.3
+   ```
+- Встановлюємо пакет mongodb-clients:
+   ```
+   sudo apt install mongodb-clients
+   ```
+- Встановлюємо пакет mongodb-server-core:
+   ```
+   sudo apt install mongodb-server-core
+   ```
+
+**Windows**
+
+- Встановлюємо пакет djongo:
+   ```
+   pip install djongo --user
+   ```
+- Встановлюємо пакет pymongo (конкретної версії):
+   ```
+   pip install pymongo==3.12.3 --user
+- Встановлюємо пакет mongodb з офіційного сайту: https://fastdl.mongodb.org/windows/mongodb-windows-x86_64-7.0.4-signed.msi
+- Встановлюємо пакет mongosh з офіційного сайту: https://downloads.mongodb.com/compass/mongosh-2.1.1-x64.msi
+- Встановлюємо пакет mongocli з офіційного сайту: https://fastdl.mongodb.org/mongocli/mongocli_1.31.0_windows_x86_64.msi
+- Встановлюємо пакет mongodb-dataset-tools з офіційного сайту: https://fastdl.mongodb.org/tools/db/mongodb-database-tools-windows-x86_64-100.9.4.msi
+   
+# MongoDB backup
+
+У папці data_backup знаходяться початкові дані для бази даних (4 сенсори та декілька записів у архіві).
+Вона була створена за допомогою спеціальної команди:
+```
+mongodump --out data_backup/
+```
+Разово на початку роботи із MongoDB для витягання цих даних або повному перезапису даних у папці data до початкових необхідно викликати спеціальну команду:
+
+**Linux**
+
+```
+mongorestore --drop --dir data_backup
+```
+
+**Windows**
+
+Та ж сама команда, але необхідно вказувати повний шлях до mongorestore:
+```
+"C:\...\mongorestore" --drop --dir data_backup
+```
