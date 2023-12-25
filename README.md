@@ -216,3 +216,17 @@ sudo ln -s /etc/nginx/sites-available/djangoproject.conf ./djangoproject.conf
 127.0.0.1    localhost djangoproject
 ```
 Необхідно перезапустити nginx для застосування нових конфігурацій. Якщо налаштування були виконані правильно, то після переходу за адресою http://djangoproject:9000/ у браузері повинен відобразитися ваш проект.
+
+
+# MQTT
+MQTT — спрощений мережевий протокол, що працює на TCP/IP. Використовується для обміну повідомленнями між пристроями за принципом видавець-підписник.
+Для встановлення:
+1. Створити віртуальну машину з ОС Ubuntu
+2. Встановити пакунок mosquitto
+3. За допомогою команди mosquitto_passwd створити файл паролів у /etc/mosquitto/passwd і додати у файл конфігурацій рядок 
+```
+password_file /etc/mosquitto/passwd
+```
+4. Виконати команду systemctl restart mosquitto
+5. Переконатися, що сервіс запущено: systemctl status mosquitto
+Якщо все працює коректно, статус повинен бути active (running)
